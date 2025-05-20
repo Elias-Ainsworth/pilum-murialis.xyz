@@ -7,7 +7,7 @@
 }:
 
 let
-  sitePackage = pkgs.callPackage ../site/out { };
+  sitePackage = pkgs.callPackage ../site/ { };
 in
 {
   options = {

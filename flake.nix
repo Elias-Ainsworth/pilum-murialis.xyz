@@ -37,6 +37,8 @@
           };
         };
 
-      flake.nixosModules.default = import ./nix/nginx-module.nix;
+      flake.nixosModules.default = {
+        _module.args.domain = "pilum-murialis.xyz";
+      } // import ./nix/nginx-module.nix;
     };
 }
