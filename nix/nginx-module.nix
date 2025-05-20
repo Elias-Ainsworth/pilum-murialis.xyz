@@ -18,7 +18,7 @@ in
     services.nginx = {
       enable = true;
       virtualHosts.${domain} = {
-        root = "${sitePackage}/out";
+        root = "${sitePackage}";
         serverAliases = [
           domain
           "www.${domain}"
