@@ -1,0 +1,28 @@
+;; -*- lexical-binding: t; -*-
+(require 'ox-publish)
+
+(setq org-publish-project-alist
+      `(("website-org"
+         :base-directory ,(expand-file-name "pages" (file-name-directory load-file-name))
+         :base-extension "org"
+         :publishing-directory ,(expand-file-name "out" (file-name-directory load-file-name))
+         :recursive t
+         :publishing-function org-html-publish-to-html
+         :with-author t
+         :with-creator t
+         :section-numbers nil
+         :with-toc nil
+         :html-head "<link rel=\"stylesheet\" type=\"text/css\" href=\"./assets/style.css\" />"
+         :html-preamble t)
+
+        ("website-assets"
+         :base-directory ,(expand-file-name "assets" (file-name-directory load-file-name))
+         :base-extension "css\\|js\\|png\\|jpg\\|svg\\|otf\\|ttf\\|woff2"
+         :publishing-directory ,(expand-file-name "out/assets" (file-name-directory load-file-name))
+         :recursive t
+         :publishing-function org-publish-attachment)
+
+        ("website" :components ("website-org" "website-assets"))))
+
+(message "Org-publish ready: Run M-x org-publish RET website RET")
+
