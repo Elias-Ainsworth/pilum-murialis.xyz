@@ -24,7 +24,7 @@
             src = ./site;
             installPhase = ''
               mkdir -p $out
-              cp -r * $out/
+              cp -r out/* $out/
             '';
           };
 
