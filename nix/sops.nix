@@ -5,7 +5,7 @@ in
 {
   sops = {
     # to edit secrets file, run "sops hosts/secrets.json"
-    defaultSopsFile = ../secrets/cloudflare-cred.json;
+    # defaultSopsFile = ../secrets/cloudflare-cred.json;
 
     # use full path to persist as the secrets activation script runs at the start
     # of stage 2 boot before impermanence
