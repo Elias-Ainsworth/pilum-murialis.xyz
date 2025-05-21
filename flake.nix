@@ -39,8 +39,7 @@
         };
 
       flake.nixosModules.default = {
-        _module.args.domain = "pilum-murialis.xyz";
-        imports = [ ./nix/nginx-module.nix ];
+        imports = [ ./nix/default.nix ];
       };
     };
 }
