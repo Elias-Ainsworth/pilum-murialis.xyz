@@ -1,45 +1,37 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    systems.url = "github:nix-systems/default-linux";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    systems.url = "github:nix-systems/default-linux";
   };
 
   outputs =
-    inputs@{
-      self,
-      nixpkgs,
-      flake-parts,
-      systems,
-      ...
-    }:
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = import systems;
+    { flake-parts, systems, ... }@inputs:
+    flake-parts.lib.mkFlake { inherit inputs; } (
+      { config, self, ... }:
+      {
+        systems = import systems;
 
-      perSystem =
-        { system, pkgs, ... }:
-        {
-          packages.default = pkgs.stdenv.mkDerivation {
-            name = "website";
-            src = ./site;
-            installPhase = ''
-              mkdir -p $out
-              cp -r out/* $out/
-            '';
-          };
-
-          devShells.default = pkgs.mkShell {
-            packages = with pkgs; [
-              curl
-              sops
-              statix
-              nixfmt-rfc-style
-            ];
+        flake = {
+          nixosModules = {
+            default = config.nixosModules.pilum-murialis-xyz;
+            pilum-murialis-xyz = import ./flake/nixos.nix self;
           };
         };
 
-      flake.nixosModules.default = {
-        imports = [ ./nix/default.nix ];
-      };
-    };
+        perSystem =
+          { config, pkgs, ... }:
+          {
+            packages = {
+              default = config.packages.pilum-murialis-xyz;
+              pilum-murialis-xyz = pkgs.callPackage ./flake/package.nix { };
+            };
+
+            devShells = {
+              default = config.devShells.development;
+              development = pkgs.callPackage ./flake/shell.nix { };
+            };
+          };
+      }
+    );
 }
