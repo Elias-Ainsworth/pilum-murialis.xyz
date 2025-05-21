@@ -1,27 +1,24 @@
 {
   config,
-  pkgs,
   lib,
-  domain ? "pilum-murialis.xyz",
+  pkgs,
   ...
 }:
 
 let
+  cfg = config.services.website;
   sitePackage = pkgs.callPackage ../site { };
+  inherit (lib) mkIf;
 in
 {
-  options = {
-    services.website.enable = lib.mkEnableOption "Enable hosting the website";
-  };
-
-  config = lib.mkIf config.services.website.enable {
+  config = mkIf cfg.enable {
     services.nginx = {
       enable = true;
-      virtualHosts.${domain} = {
+      virtualHosts.${cfg.domain} = {
         root = "${sitePackage}";
         serverAliases = [
-          domain
-          "www.${domain}"
+          cfg.domain
+          "www.${cfg.domain}"
         ];
         listen = [
           {
@@ -30,7 +27,6 @@ in
           }
         ];
         locations."/" = {
-          # extraConfig = "index index.html;";
           index = "index.html";
           tryFiles = "$uri $uri/ =404";
         };

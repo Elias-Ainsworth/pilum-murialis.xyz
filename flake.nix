@@ -31,6 +31,7 @@
           devShells.default = pkgs.mkShell {
             packages = with pkgs; [
               curl
+              sops
               statix
               nixfmt-rfc-style
             ];
