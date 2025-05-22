@@ -17,9 +17,14 @@
             # default = config.nixosModules.pilum-murialis-xyz;
             default = pilum-murialis-xyz;
             pilum-murialis-xyz =
-              { config, pkgs, ... }:
+              {
+                config,
+                pkgs,
+                lib,
+                ...
+              }:
               import ./flake/nixos.nix {
-                inherit self pkgs;
+                inherit self pkgs lib;
                 localFlake = self;
                 config = config;
               };
