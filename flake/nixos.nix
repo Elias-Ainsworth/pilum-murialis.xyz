@@ -1,8 +1,8 @@
-localFlake:
 {
   config,
   lib,
   pkgs,
+  localFlake,
   ...
 }:
 let
