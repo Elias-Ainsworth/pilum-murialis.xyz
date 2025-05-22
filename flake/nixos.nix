@@ -8,7 +8,7 @@ localFlake:
 let
   inherit (lib) types;
   inherit (lib.modules) mkIf;
-  inherit (lib.options) mkEnableOption mkPackageOption;
+  inherit (lib.options) mkOption mkEnableOption mkPackageOption;
 
   package = localFlake.packages.${pkgs.system}.pilum-murialis-xyz;
 
@@ -28,7 +28,7 @@ in
     services.nginx = {
       enable = true;
       virtualHosts."${cfg.domain}" = {
-        root = "${sitePackage}";
+        root = "${cfg.package}";
         serverAliases = [
           cfg.domain
           "www.${cfg.domain}"

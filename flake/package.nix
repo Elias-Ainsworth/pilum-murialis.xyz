@@ -1,4 +1,4 @@
-{ stdenv ...}:
+{ stdenv, ... }:
 stdenv.mkDerivation {
   name = "pilum-murialis-xyz";
   src = ../src;
