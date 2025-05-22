@@ -13,8 +13,9 @@
         systems = import systems;
 
         flake = {
-          nixosModules = {
-            default = config.nixosModules.pilum-murialis-xyz;
+          nixosModules = rec {
+            # default = config.nixosModules.pilum-murialis-xyz;
+            default = pilum-murialis-xyz;
             pilum-murialis-xyz = import ./flake/nixos.nix self;
           };
         };
