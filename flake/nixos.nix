@@ -6,7 +6,7 @@ self:
   ...
 }:
 let
-  inherit (lib.type) str package;
+  inherit (lib.types) str package;
   inherit (lib.modules) mkIf;
   inherit (lib.options) mkOption mkEnableOption;
 
