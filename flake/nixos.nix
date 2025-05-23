@@ -1,26 +1,29 @@
+self:
 {
-  config,
   lib,
   pkgs,
-  localFlake,
+  config,
   ...
 }:
 let
-  inherit (lib) types;
+  inherit (lib.type) str package;
   inherit (lib.modules) mkIf;
-  inherit (lib.options) mkOption mkEnableOption mkPackageOption;
+  inherit (lib.options) mkOption mkEnableOption;
 
-  package = localFlake.packages.${pkgs.system}.pilum-murialis-xyz;
+  # package = localFlake.packages.${pkgs.system}.pilum-murialis-xyz;
+  packages = self.packages.${pkgs.system};
 
   cfg = config.services.pilum-murialis-xyz;
 in
 {
   options.services.pilum-murialis-xyz = {
     enable = mkEnableOption "pilum-murialis-xyz";
-    package = mkPackageOption package "pilum-murialis-xyz" { };
-
+    package = mkOption {
+      type = package;
+      inherit (packages) default;
+    };
     domain = mkOption {
-      type = types.str;
+      type = str;
     };
   };
 
