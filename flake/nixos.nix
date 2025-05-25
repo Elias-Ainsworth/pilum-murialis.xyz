@@ -212,10 +212,10 @@ in
     ];
 
     # System packages
-    environment.systemPackages = [
-      pkgs.git
-      pkgs.emacs
-      deployScript # Available as 'deploy-blog' command
-    ];
+    # environment.systemPackages = [
+    #   pkgs.git
+    #   pkgs.emacs
+    #   deployScript # Available as 'deploy-blog' command
+    # ];
   };
 }
