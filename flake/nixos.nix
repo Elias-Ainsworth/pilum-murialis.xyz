@@ -13,69 +13,72 @@ let
   cfg = config.services.pilum-murialis-xyz;
 
   # Simple webhook server using netcat
-  webhookServer = pkgs.writeShellScript "webhook-server"
-  # bash
-  '' echo "Starting webhook server on port 8080..."
+  webhookServer =
+    pkgs.writeShellScript "webhook-server"
+      # bash
+      ''
+        echo "Starting webhook server on port 8080..."
 
-    while true; do
-      echo "Waiting for webhook..."
-      
-      # Listen for HTTP request
-      REQUEST=$(echo -e "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nBlog rebuild triggered" | \
-        ${pkgs.netcat-gnu}/bin/nc -l -p 8080 -q 1)
-      
-      # Check if it's a POST to /webhook
-      if echo "$REQUEST" | grep -q "POST /webhook"; then
-        echo "Valid webhook received, triggering rebuild..."
-        systemctl start blog-rebuild
-      else
-        echo "Invalid request, ignoring..."
-      fi
-      
-      sleep 1
-    done
-  '';
+           while true; do
+             echo "Waiting for webhook..."
+             
+             # Listen for HTTP request
+             REQUEST=$(echo -e "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nBlog rebuild triggered" | \
+               ${pkgs.netcat-gnu}/bin/nc -l -p 8080 -q 1)
+             
+             # Check if it's a POST to /webhook
+             if echo "$REQUEST" | grep -q "POST /webhook"; then
+               echo "Valid webhook received, triggering rebuild..."
+               systemctl start blog-rebuild
+             else
+               echo "Invalid request, ignoring..."
+             fi
+             
+             sleep 1
+           done
+      '';
 
   # Blog rebuild script
-  rebuildScript = pkgs.writeShellScript "blog-rebuild"
-  # bash
-  ''
-    set -e
+  rebuildScript =
+    pkgs.writeShellScript "blog-rebuild"
+      # bash
+      ''
+        set -e
 
-    CONTENT_DIR="/var/lib/blog/content"
-    WEB_ROOT="/var/www/${cfg.domain}"
+        CONTENT_DIR="/var/lib/blog/content"
+        WEB_ROOT="/var/www/${cfg.domain}"
 
-    echo "=== Blog Rebuild Started ==="
+        echo "=== Blog Rebuild Started ==="
 
-    # Create directories if they don't exist
-    mkdir -p "$CONTENT_DIR"
-    mkdir -p "$WEB_ROOT"
+        # Create directories if they don't exist
+        mkdir -p "$CONTENT_DIR"
+        mkdir -p "$WEB_ROOT"
 
-    # Clone or update content
-    if [ ! -d "$CONTENT_DIR/.git" ]; then
-      echo "Cloning content repository..."
-      ${pkgs.git}/bin/git clone ${cfg.contentRepo} "$CONTENT_DIR"
-    else
-      echo "Updating content repository..."
-      cd "$CONTENT_DIR"
-      ${pkgs.git}/bin/git pull origin main
-    fi
+        # Clone or update content
+        if [ ! -d "$CONTENT_DIR/.git" ]; then
+          echo "Cloning content repository..."
+          ${pkgs.git}/bin/git clone ${cfg.contentRepo} "$CONTENT_DIR"
+        else
+          echo "Updating content repository..."
+          cd "$CONTENT_DIR"
+          ${pkgs.git}/bin/git pull origin main
+        fi
 
-    # Build with Emacs
-    echo "Building site with Emacs..."
-    cd "$CONTENT_DIR"
-    ${pkgs.emacs}/bin/emacs --batch --load src/publish.el --eval "(org-publish \"website\")"
+        # Build with Emacs
+        echo "Building site with Emacs..."
+        cd "$CONTENT_DIR"
+        ${pkgs.emacs}/bin/emacs --batch --load src/publish.el --eval "(org-publish \"website\")"
 
-    # Copy to web root
-    echo "Deploying to web root..."
-    ${pkgs.rsync}/bin/rsync -av --delete src/out/ "$WEB_ROOT/"
+        # Copy to web root
+        echo "Deploying to web root..."
+        ${pkgs.rsync}/bin/rsync -av --delete src/out/ "$WEB_ROOT/"
 
-    # Fix permissions
-    chown -R nginx:nginx "$WEB_ROOT"
-    chmod -R 755 "$WEB_ROOT"
+        # Fix permissions
+        chown -R nginx:nginx "$WEB_ROOT"
+        chmod -R 755 "$WEB_ROOT"
 
-    echo "=== Blog Rebuild Complete ==="
-  '';
+        echo "=== Blog Rebuild Complete ==="
+      '';
 
 in
 {
@@ -180,6 +183,7 @@ in
         locations."/webhook" = {
           proxyPass = "http://127.0.0.1:8080";
           extraConfig = ''
+
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
           '';
