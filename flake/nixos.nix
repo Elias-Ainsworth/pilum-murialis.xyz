@@ -13,10 +13,9 @@ let
   cfg = config.services.pilum-murialis-xyz;
 
   # Simple webhook server using netcat
-  webhookServer = pkgs.writeScript "webhook-server" ''
-    #!/bin/bash
-
-    echo "Starting webhook server on port 8080..."
+  webhookServer = pkgs.writeShellScript "webhook-server"
+  # bash
+  '' echo "Starting webhook server on port 8080..."
 
     while true; do
       echo "Waiting for webhook..."
@@ -38,8 +37,9 @@ let
   '';
 
   # Blog rebuild script
-  rebuildScript = pkgs.writeScript "blog-rebuild" ''
-    #!/bin/bash
+  rebuildScript = pkgs.writeShellScript "blog-rebuild"
+  # bash
+  ''
     set -e
 
     CONTENT_DIR="/var/lib/blog/content"
