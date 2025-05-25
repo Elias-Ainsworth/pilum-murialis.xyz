@@ -64,7 +64,7 @@ let
         else
           echo "Updating content repository..."
           cd "$CONTENT_DIR"
-          ${pkgs.git}/bin/git update origin
+          ${pkgs.git}/bin/git remote update origin
           ${pkgs.git}/bin/git reset --hard origin/main
         fi
 
