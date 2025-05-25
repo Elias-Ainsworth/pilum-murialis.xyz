@@ -1,5 +1,6 @@
 self:
 {
+  inputs,
   lib,
   pkgs,
   config,
@@ -12,6 +13,8 @@ let
 
   cfg = config.services.pilum-murialis-xyz;
 
+  thornemacs = inputs.thornemacs.packages.${pkgs.system}.default;
+
   # Simple webhook server using netcat
   webhookServer =
     pkgs.writeShellScript "webhook-server"
@@ -21,11 +24,11 @@ let
 
            while true; do
              echo "Waiting for webhook..."
-             
+
              # Listen for HTTP request
              REQUEST=$(echo -e "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nBlog rebuild triggered" | \
                ${pkgs.netcat-openbsd}/bin/nc -l -p 8080 -q 1)
-             
+
              # Check if it's a POST to /webhook
              if echo "$REQUEST" | grep -q "POST /webhook"; then
                echo "Valid webhook received, triggering rebuild..."
@@ -33,7 +36,7 @@ let
              else
                echo "Invalid request, ignoring..."
              fi
-             
+
              sleep 1
            done
       '';
@@ -61,14 +64,14 @@ let
         else
           echo "Updating content repository..."
           cd "$CONTENT_DIR"
-          git remote update origin 
+          git remote update origin
           ${pkgs.git}/bin/git reset --hard origin/main
         fi
 
         # Build with Emacs
         echo "Building site with Emacs..."
         cd "$CONTENT_DIR"
-        ${pkgs.emacs}/bin/emacs --batch --load src/publish.el --eval "(org-publish \"website\")"
+        ${thornemacs}/bin/emacs --batch --load src/publish.el --eval "(org-publish \"website\")"
 
         # Copy to web root
         echo "Deploying to web root..."
@@ -195,7 +198,7 @@ in
     # System packages
     # environment.systemPackages = [
     #   pkgs.git
-    #   pkgs.emacs
+    #   thornemacs
     #   deployScript # Available as 'deploy-blog' command
     # ];
   };

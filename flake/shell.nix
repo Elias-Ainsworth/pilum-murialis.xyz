@@ -1,4 +1,5 @@
 {
+  inputs,
   mkShell,
   pkgs,
   ...
@@ -8,7 +9,7 @@ mkShell {
     # Just in case
     curl
     git
-
+    inputs.thornemacs.packages.${system}.default
     # Nix tools
     deadnix
     nixfmt-rfc-style

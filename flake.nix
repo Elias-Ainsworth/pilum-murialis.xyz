@@ -3,6 +3,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     systems.url = "github:nix-systems/default-linux";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    thornemacs = {
+      url = "github:elias-ainsworth/thornemacs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -32,7 +36,7 @@
 
           devShells = rec {
             default = development;
-            development = pkgs.callPackage ./flake/shell.nix { };
+            development = pkgs.callPackage ./flake/shell.nix { inherit inputs; };
           };
         };
       flake = {
