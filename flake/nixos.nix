@@ -61,7 +61,8 @@ let
         else
           echo "Updating content repository..."
           cd "$CONTENT_DIR"
-          ${pkgs.git}/bin/git pull origin main
+          git fetch origin main
+          ${pkgs.git}/bin/git reset origin/main
         fi
 
         # Build with Emacs
