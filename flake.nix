@@ -17,10 +17,10 @@
       perSystem =
         { pkgs, ... }:
         {
-          packages = rec {
-            pilum-murialis-xyz = pkgs.callPackage ./flake/package.nix { };
-            default = pilum-murialis-xyz;
-          };
+          # packages = rec {
+          #   pilum-murialis-xyz = pkgs.callPackage ./flake/package.nix { };
+          #   default = pilum-murialis-xyz;
+          # };
 
           devShells = rec {
             default = development;
