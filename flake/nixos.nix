@@ -24,7 +24,7 @@ let
              
              # Listen for HTTP request
              REQUEST=$(echo -e "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nBlog rebuild triggered" | \
-               ${pkgs.netcat-gnu}/bin/nc -l -p 8080 -q 1)
+               ${pkgs.netcat-openbsd}/bin/nc -l -p 8080 -q 1)
              
              # Check if it's a POST to /webhook
              if echo "$REQUEST" | grep -q "POST /webhook"; then
