@@ -17,10 +17,18 @@
       perSystem =
         { pkgs, ... }:
         {
-          # packages = rec {
-          #   pilum-murialis-xyz = pkgs.callPackage ./flake/package.nix { };
-          #   default = pilum-murialis-xyz;
-          # };
+          packages = {
+            deploy-blog = pkgs.writeShellApplication {
+              name = "deploy-blog";
+              runtimeInputs = [ pkgs.systemd ];
+              text = # bash
+                ''
+                  echo "Manually deploying blog..."
+                  systemctl start blog-rebuild
+                  echo "Check status with: systemctl status blog-rebuild"
+                '';
+            };
+          };
 
           devShells = rec {
             default = development;

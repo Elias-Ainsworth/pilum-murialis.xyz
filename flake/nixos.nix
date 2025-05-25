@@ -23,7 +23,7 @@ let
       
       # Listen for HTTP request
       REQUEST=$(echo -e "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nBlog rebuild triggered" | \
-        ${pkgs.netcat}/bin/nc -l -p 8080 -q 1)
+        ${pkgs.netcat-gnu}/bin/nc -l -p 8080 -q 1)
       
       # Check if it's a POST to /webhook
       if echo "$REQUEST" | grep -q "POST /webhook"; then
@@ -77,14 +77,6 @@ let
     echo "=== Blog Rebuild Complete ==="
   '';
 
-  # Manual deploy script for easy use
-  deployScript = pkgs.writeScript "deploy-blog" ''
-    #!/bin/bash
-    echo "Manually deploying blog..."
-    systemctl start blog-rebuild
-    echo "Check status with: systemctl status blog-rebuild"
-  '';
-
 in
 {
   options.services.pilum-murialis-xyz = {
@@ -102,11 +94,11 @@ in
       example = "https://github.com/username/blog-content.git";
     };
 
-    email = mkOption {
-      type = str;
-      description = "Email for ACME/Let's Encrypt";
-      example = "you@example.com";
-    };
+    # email = mkOption {
+    #   type = str;
+    #   description = "Email for ACME/Let's Encrypt";
+    #   example = "you@example.com";
+    # };
   };
 
   config = mkIf cfg.enable {
@@ -179,10 +171,6 @@ in
         root = "/var/www/${cfg.domain}";
         serverAliases = [ "www.${cfg.domain}" ];
 
-        # HTTPS
-        forceSSL = true;
-        enableACME = true;
-
         locations."/" = {
           index = "index.html";
           tryFiles = "$uri $uri/ =404";
@@ -198,18 +186,6 @@ in
         };
       };
     };
-
-    # ACME for HTTPS
-    security.acme = {
-      acceptTerms = true;
-      defaults.email = cfg.email;
-    };
-
-    # Firewall
-    networking.firewall.allowedTCPPorts = [
-      80
-      443
-    ];
 
     # System packages
     # environment.systemPackages = [
