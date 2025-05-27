@@ -71,11 +71,11 @@ let
         # Build with Emacs
         echo "Building site with Emacs..."
         cd "$CONTENT_DIR"
-        ${thornemacs}/bin/emacs --batch --load src/publish.el --eval "(org-publish \"website\")"
+        ${thornemacs}/bin/emacs -nw --load publish.el --eval '(progn (org-publish "site" t) (kill-emacs))'
 
         # Copy to web root
         echo "Deploying to web root..."
-        ${pkgs.rsync}/bin/rsync -av --delete src/out/ "$WEB_ROOT/"
+        ${pkgs.rsync}/bin/rsync -av --delete out/ "$WEB_ROOT/"
 
         # Fix permissions
         chown -R nginx:nginx "$WEB_ROOT"
@@ -194,12 +194,5 @@ in
         };
       };
     };
-
-    # System packages
-    # environment.systemPackages = [
-    #   pkgs.git
-    #   thornemacs
-    #   deployScript # Available as 'deploy-blog' command
-    # ];
   };
 }
