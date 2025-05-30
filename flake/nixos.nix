@@ -71,7 +71,7 @@ let
         # Build with Emacs
         echo "Building site with Emacs..."
         cd "$CONTENT_DIR"
-        ${thornemacs}/bin/emacs -nw --load publish.el --eval '(progn (org-publish "site" t) (kill-emacs))'
+        ${thornemacs}/bin/emacs --batch --load publish.el t --eval '(org-publish "site" t)'
 
         # Copy to web root
         echo "Deploying to web root..."
